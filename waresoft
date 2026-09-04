@@ -1,4 +1,4 @@
--- VISITING v8 - ÇALIŞAN SÜRÜM
+-- VISITING v9 - HATA DÜZELTİLDİ
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -10,10 +10,11 @@ local Camera = Workspace.CurrentCamera
 local Mouse = LocalPlayer:GetMouse()
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "VS_V8"
+ScreenGui.Name = "VS_V9"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 
+-- === ANA FRAME ===
 local Main = Instance.new("Frame")
 Main.Size = UDim2.new(0, 620, 0, 720)
 Main.Position = UDim2.new(0.5, -310, 0.03, 0)
@@ -40,6 +41,7 @@ local function Shadow(parent)
 end
 Shadow(Main)
 
+-- === TITLE BAR ===
 local Title = Instance.new("Frame", Main)
 Title.Size = UDim2.new(1, 0, 0, 56)
 Title.BackgroundColor3 = Color3.fromRGB(12, 14, 30)
@@ -55,7 +57,7 @@ local Txt = Instance.new("TextLabel", Title)
 Txt.Size = UDim2.new(1, -80, 1, 0)
 Txt.Position = UDim2.new(0, 20, 0, 0)
 Txt.BackgroundTransparency = 1
-Txt.Text = "VISITING v8"
+Txt.Text = "VISITING v9"
 Txt.TextColor3 = Color3.fromRGB(255, 255, 255)
 Txt.Font = Enum.Font.GothamBlack
 Txt.TextSize = 24
@@ -72,6 +74,7 @@ Close.TextSize = 24
 Instance.new("UICorner", Close).CornerRadius = UDim.new(0, 10)
 Close.MouseButton1Click:Connect(function() ScreenGui.Enabled = false end)
 
+-- === PANELLER ===
 local LeftPanel = Instance.new("Frame", Main)
 LeftPanel.Size = UDim2.new(0, 140, 1, -56)
 LeftPanel.Position = UDim2.new(0, 0, 0, 56)
@@ -85,6 +88,7 @@ RightPanel.BackgroundColor3 = Color3.fromRGB(6, 8, 18)
 RightPanel.BorderSizePixel = 0
 Instance.new("UICorner", RightPanel).CornerRadius = UDim.new(0, 0)
 
+-- === STATES ===
 local States = {
     Fly = false, FlySpeed = 60,
     NoClip = false,
@@ -99,16 +103,20 @@ local States = {
     TargetPlayer = nil
 }
 
+-- === CONNECTIONS ve DEĞİŞKENLER ===
 local Connections = {}
 local ESPObjects = {}
 local SpinAngle = 0
 local FOVCircle = nil
-local Dropdowns = {}
+local Dropdowns = {}  -- ÖNCE TANIMLA!
 
+-- === YARDIMCI FONKSİYONLAR ===
 local function GetPlayerNames()
     local names = {}
     for _, p in ipairs(Players:GetPlayers()) do
-        if p ~= LocalPlayer then table.insert(names, p.Name) end
+        if p ~= LocalPlayer then
+            table.insert(names, p.Name)
+        end
     end
     if #names == 0 then table.insert(names, "No Players") end
     return names
@@ -123,12 +131,17 @@ end
 
 local function UpdateAllDropdowns()
     local names = GetPlayerNames()
-    for _, dd in ipairs(Dropdowns) do dd(names) end
+    for _, dd in ipairs(Dropdowns) do
+        if type(dd) == "function" then
+            pcall(dd, names)
+        end
+    end
 end
 
 Players.PlayerAdded:Connect(function() task.wait(0.5) UpdateAllDropdowns() end)
 Players.PlayerRemoving:Connect(function() task.wait(0.5) UpdateAllDropdowns() end)
 
+-- === ÖZELLİK FONKSİYONLARI ===
 function StartFly()
     if Connections.Fly then Connections.Fly:Disconnect(); Connections.Fly = nil end
     local char = LocalPlayer.Character
@@ -482,6 +495,7 @@ function DrawFOVCircle()
     end)
 end
 
+-- === MENÜ OLUŞTURMA ===
 local function ClearRight()
     for _, v in ipairs(RightPanel:GetChildren()) do
         if v:IsA("ScrollingFrame") then v:Destroy() end
@@ -719,6 +733,7 @@ local function BuildCategory(cat)
         return f
     end
 
+    -- KATEGORİ İÇERİKLERİ
     if cat == "MOVEMENT" then
         Section("FLIGHT")
         Toggle("Fly", function(v) States.Fly = v; if v then StartFly() else StopFly() end end)
@@ -750,7 +765,7 @@ local function BuildCategory(cat)
     elseif cat == "UTILITY" then
         Section("TELEPORT")
         local targetDD = Dropdown("Target Player", function(sel) States.TargetPlayer = sel end)
-        table.insert(Dropdowns, targetDD)
+        table.insert(Dropdowns, targetDD)  -- Dropdowns tablosuna ekle
         targetDD(GetPlayerNames())
         Button("Teleport to Target", function()
             if States.TargetPlayer and States.TargetPlayer ~= "No Players" then
@@ -803,7 +818,7 @@ local function BuildCategory(cat)
     elseif cat == "GUIDE" then
         local guideText = [[
 ═══════════════════════════════════════
-          VISITING v8 PRO GUIDE
+          VISITING v9 PRO GUIDE
 ═══════════════════════════════════════
 
 [CONTROLS]
@@ -866,6 +881,7 @@ Kill Target → Attempt to kill selected player
     Scroll.CanvasSize = UDim2.new(0, 0, 0, #Scroll:GetChildren() * 52 + 100)
 end
 
+-- === KATEGORİ BUTONLARI ===
 local Categories = {"MOVEMENT", "AIMBOT", "ESP", "UTILITY", "GUIDE"}
 local CatButtons = {}
 
@@ -891,6 +907,7 @@ for i, cat in ipairs(Categories) do
     table.insert(CatButtons, btn)
 end
 
+-- === RESET ===
 local function ResetAll()
     States.Fly = false; States.NoClip = false; States.Aimbot = false; States.Spinbot = false; States.ESP = false; States.DrawFOV = false; States.MagicBullet = false
     StopFly(); StopNoClip(); StopAimbot(); StopSpinbot(); StopESP(); StopMagicBullet()
@@ -909,11 +926,12 @@ UserInputService.InputBegan:Connect(function(i, gp)
     end
 end)
 
+-- === SPLASH ===
 local splash = Instance.new("TextLabel", ScreenGui)
 splash.Size = UDim2.new(0, 420, 0, 48)
 splash.Position = UDim2.new(0.5, -210, 0, 20)
 splash.BackgroundColor3 = Color3.fromRGB(8, 10, 20)
-splash.Text = "VISITING v8 | INSERT | END = Emergency Stop"
+splash.Text = "VISITING v9 | INSERT | END = Emergency Stop"
 splash.TextColor3 = Color3.fromRGB(0, 200, 255)
 splash.Font = Enum.Font.GothamBold
 splash.TextSize = 18
@@ -921,7 +939,8 @@ Instance.new("UICorner", splash).CornerRadius = UDim.new(0, 12)
 Shadow(splash)
 task.delay(5, function() splash:Destroy() end)
 
+-- === BAŞLAT ===
 BuildCategory("MOVEMENT")
 UpdateAllDropdowns()
-print("=== VISITING v8 YÜKLENDİ ===")
+print("=== VISITING v9 YÜKLENDİ ===")
 print("Tüm özellikler konsoldan takip edilebilir.")
