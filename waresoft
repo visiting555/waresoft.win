@@ -33,124 +33,126 @@ local function CreateShadow(parent, size, pos, trans)
 end
 
 local Main = Instance.new("Frame")
-Main.Size = UDim2.new(0, 500, 0, 700)
-Main.Position = UDim2.new(0.5, -250, 0.5, -350)
+Main.Size = UDim2.new(0, 520, 0, 700)
+Main.Position = UDim2.new(0.5, -260, 0.03, 0)
 Main.BackgroundColor3 = Color3.fromRGB(6, 8, 18)
 Main.BorderSizePixel = 0
 Main.Active = true
 Main.Draggable = true
 Main.Parent = ScreenGui
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 18)
-CreateShadow(Main, UDim2.new(1, 80, 1, 80), UDim2.new(0.5, 0, 0.5, 0), 0.8)
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 16)
+CreateShadow(Main, UDim2.new(1, 80, 1, 80), UDim2.new(0.5, 0, 0.5, 0), 0.7)
 
 local Title = Instance.new("Frame", Main)
-Title.Size = UDim2.new(1, 0, 0, 55)
-Title.BackgroundColor3 = Color3.fromRGB(10, 12, 24)
+Title.Size = UDim2.new(1, 0, 0, 54)
+Title.BackgroundColor3 = Color3.fromRGB(10, 12, 26)
 Title.BorderSizePixel = 0
-Instance.new("UICorner", Title).CornerRadius = UDim.new(0, 18)
-
-local Grad = Instance.new("UIGradient", Title)
-Grad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 150, 255)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 80, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 150, 255))
+Instance.new("UICorner", Title).CornerRadius = UDim.new(0, 16)
+local TitleGrad = Instance.new("UIGradient", Title)
+TitleGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 180, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 100, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 180, 255))
 })
-Grad.Rotation = 90
+TitleGrad.Rotation = 90
 
 local Txt = Instance.new("TextLabel", Title)
-Txt.Size = UDim2.new(1, -90, 1, 0)
+Txt.Size = UDim2.new(1, -80, 1, 0)
 Txt.Position = UDim2.new(0, 20, 0, 0)
 Txt.BackgroundTransparency = 1
-Txt.Text = "VISITING v6"
+Txt.Text = "VISITING v6 PRO"
 Txt.TextColor3 = Color3.fromRGB(255, 255, 255)
 Txt.Font = Enum.Font.GothamBlack
-Txt.TextSize = 24
+Txt.TextSize = 22
 Txt.TextXAlignment = Enum.TextXAlignment.Left
 
 local Close = Instance.new("TextButton", Title)
 Close.Size = UDim2.new(0, 36, 0, 36)
-Close.Position = UDim2.new(1, -48, 0.5, -18)
-Close.BackgroundColor3 = Color3.fromRGB(255, 40, 80)
+Close.Position = UDim2.new(1, -46, 0.5, -18)
+Close.BackgroundColor3 = Color3.fromRGB(255, 30, 70)
 Close.Text = "✕"
 Close.TextColor3 = Color3.fromRGB(255, 255, 255)
 Close.Font = Enum.Font.GothamBold
 Close.TextSize = 24
-Instance.new("UICorner", Close).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", Close).CornerRadius = UDim.new(0, 10)
 Close.MouseButton1Click:Connect(function() ScreenGui.Enabled = false end)
 
-local TabBar = Instance.new("Frame", Main)
-TabBar.Size = UDim2.new(1, 0, 0, 44)
-TabBar.Position = UDim2.new(0, 0, 0, 55)
-TabBar.BackgroundColor3 = Color3.fromRGB(10, 12, 24)
-TabBar.BorderSizePixel = 0
+local TabContainer = Instance.new("Frame", Main)
+TabContainer.Size = UDim2.new(1, 0, 0, 44)
+TabContainer.Position = UDim2.new(0, 0, 0, 54)
+TabContainer.BackgroundColor3 = Color3.fromRGB(10, 12, 26)
+TabContainer.BorderSizePixel = 0
 
-local Tabs = {}
+local Tabs = {"MOVEMENT", "AIMBOT", "ESP", "UTILITY", "GUIDE"}
 local TabButtons = {}
-local CurrentTab = nil
+local CurrentTab = "MOVEMENT"
 
-local function CreateTab(name)
-    local btn = Instance.new("TextButton", TabBar)
-    btn.Size = UDim2.new(0.2, 0, 1, 0)
-    btn.BackgroundColor3 = Color3.fromRGB(20, 22, 36)
+local Scroll = Instance.new("ScrollingFrame", Main)
+Scroll.Size = UDim2.new(1, -20, 1, -108)
+Scroll.Position = UDim2.new(0, 10, 0, 98)
+Scroll.BackgroundTransparency = 1
+Scroll.ScrollBarThickness = 5
+Scroll.ScrollBarImageColor3 = Color3.fromRGB(0, 200, 255)
+Scroll.CanvasSize = UDim2.new(0, 0, 0, 6000)
+Scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+
+local function SwitchTab(tab)
+    CurrentTab = tab
+    for _, btn in ipairs(TabButtons) do
+        btn.BackgroundColor3 = (btn.Text == tab) and Color3.fromRGB(0, 180, 255) or Color3.fromRGB(20, 22, 40)
+        btn.TextColor3 = (btn.Text == tab) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(150, 150, 170)
+    end
+    for _, v in ipairs(Scroll:GetChildren()) do
+        if v:IsA("Frame") or v:IsA("TextLabel") or v:IsA("TextButton") then
+            v.Visible = false
+        end
+    end
+    for _, v in ipairs(Scroll:GetChildren()) do
+        if v:IsA("Frame") and v.Name == tab then
+            v.Visible = true
+            for _, child in ipairs(v:GetChildren()) do
+                child.Visible = true
+            end
+        end
+        if v:IsA("TextLabel") and v.Name == "Guide" and tab == "GUIDE" then
+            v.Visible = true
+        end
+    end
+end
+
+for i, name in ipairs(Tabs) do
+    local btn = Instance.new("TextButton", TabContainer)
+    btn.Size = UDim2.new(1 / #Tabs, -4, 1, -4)
+    btn.Position = UDim2.new((i - 1) / #Tabs + 0.02, 0, 0.02, 0)
+    btn.BackgroundColor3 = (name == "MOVEMENT") and Color3.fromRGB(0, 180, 255) or Color3.fromRGB(20, 22, 40)
     btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(150, 150, 180)
+    btn.TextColor3 = (name == "MOVEMENT") and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(150, 150, 170)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 13
     btn.BorderSizePixel = 0
     btn.AutoButtonColor = false
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
-    btn.MouseEnter:Connect(function()
-        if btn ~= CurrentTab then btn.BackgroundColor3 = Color3.fromRGB(30, 32, 48) end
-    end)
-    btn.MouseLeave:Connect(function()
-        if btn ~= CurrentTab then btn.BackgroundColor3 = Color3.fromRGB(20, 22, 36) end
-    end)
-    local frame = Instance.new("ScrollingFrame", Main)
-    frame.Size = UDim2.new(1, -20, 1, -120)
-    frame.Position = UDim2.new(0, 10, 0, 104)
-    frame.BackgroundTransparency = 1
-    frame.ScrollBarThickness = 5
-    frame.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
-    frame.CanvasSize = UDim2.new(0, 0, 0, 2000)
-    frame.ScrollingDirection = Enum.ScrollingDirection.Y
-    frame.Visible = false
-    local layout = Instance.new("UIListLayout", frame)
-    layout.Padding = UDim.new(0, 8)
-    Tabs[name] = {Frame = frame, Button = btn, Layout = layout}
-    return frame, btn
-end
-
-local function SwitchTab(name)
-    if CurrentTab then
-        CurrentTab.Button.BackgroundColor3 = Color3.fromRGB(20, 22, 36)
-        CurrentTab.Button.TextColor3 = Color3.fromRGB(150, 150, 180)
-        CurrentTab.Frame.Visible = false
-    end
-    local tab = Tabs[name]
-    if tab then
-        tab.Button.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
-        tab.Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        tab.Frame.Visible = true
-        CurrentTab = tab
-    end
+    btn.MouseButton1Click:Connect(function() SwitchTab(name) end)
+    table.insert(TabButtons, btn)
 end
 
 local function CreateSection(parent, text)
     local f = Instance.new("Frame", parent)
     f.Size = UDim2.new(1, -10, 0, 32)
     f.BackgroundTransparency = 1
+    f.Visible = false
     local l = Instance.new("TextLabel", f)
     l.Size = UDim2.new(1, 0, 1, 0)
     l.BackgroundTransparency = 1
     l.Text = text
-    l.TextColor3 = Color3.fromRGB(0, 180, 255)
+    l.TextColor3 = Color3.fromRGB(0, 200, 255)
     l.Font = Enum.Font.GothamBold
-    l.TextSize = 16
+    l.TextSize = 17
     l.TextXAlignment = Enum.TextXAlignment.Left
     local u = Instance.new("Frame", f)
-    u.Size = UDim2.new(0.3, 0, 0, 2)
+    u.Size = UDim2.new(0.4, 0, 0, 2)
     u.Position = UDim2.new(0, 0, 1, -2)
-    u.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+    u.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
     u.BorderSizePixel = 0
     return f
 end
@@ -158,8 +160,9 @@ end
 local function CreateToggle(parent, text, callback)
     local f = Instance.new("Frame", parent)
     f.Size = UDim2.new(1, -10, 0, 44)
-    f.BackgroundColor3 = Color3.fromRGB(18, 20, 34)
+    f.BackgroundColor3 = Color3.fromRGB(18, 20, 32)
     f.BorderSizePixel = 0
+    f.Visible = false
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 10)
     local l = Instance.new("TextLabel", f)
     l.Size = UDim2.new(0.6, 0, 1, 0)
@@ -196,8 +199,9 @@ end
 local function CreateSlider(parent, text, min, max, default, callback)
     local f = Instance.new("Frame", parent)
     f.Size = UDim2.new(1, -10, 0, 68)
-    f.BackgroundColor3 = Color3.fromRGB(18, 20, 34)
+    f.BackgroundColor3 = Color3.fromRGB(18, 20, 32)
     f.BorderSizePixel = 0
+    f.Visible = false
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 10)
     local l = Instance.new("TextLabel", f)
     l.Size = UDim2.new(1, -20, 0, 24)
@@ -242,27 +246,28 @@ end
 local function CreateButton(parent, text, callback)
     local b = Instance.new("TextButton", parent)
     b.Size = UDim2.new(1, -10, 0, 44)
-    b.BackgroundColor3 = Color3.fromRGB(25, 28, 44)
+    b.BackgroundColor3 = Color3.fromRGB(25, 28, 42)
     b.Text = text
     b.TextColor3 = Color3.fromRGB(0, 200, 255)
     b.Font = Enum.Font.GothamBold
     b.TextSize = 14
     b.BorderSizePixel = 0
     b.AutoButtonColor = false
+    b.Visible = false
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 10)
     b.MouseButton1Click:Connect(callback)
-    b.MouseEnter:Connect(function() b.BackgroundColor3 = Color3.fromRGB(35, 38, 54) end)
-    b.MouseLeave:Connect(function() b.BackgroundColor3 = Color3.fromRGB(25, 28, 44) end)
+    b.MouseEnter:Connect(function() b.BackgroundColor3 = Color3.fromRGB(35, 38, 52) end)
+    b.MouseLeave:Connect(function() b.BackgroundColor3 = Color3.fromRGB(25, 28, 42) end)
     return b
 end
 
-local Dropdowns = {}
 local function CreateDropdown(parent, text, callback)
     local f = Instance.new("Frame", parent)
     f.Size = UDim2.new(1, -10, 0, 44)
-    f.BackgroundColor3 = Color3.fromRGB(18, 20, 34)
+    f.BackgroundColor3 = Color3.fromRGB(18, 20, 32)
     f.BorderSizePixel = 0
     f.ClipsDescendants = true
+    f.Visible = false
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 10)
     local l = Instance.new("TextLabel", f)
     l.Size = UDim2.new(0.35, 0, 1, 0)
@@ -320,15 +325,15 @@ local function CreateDropdown(parent, text, callback)
             for _, b in ipairs(options) do b.Visible = false end
         end
     end)
-    table.insert(Dropdowns, {Update=UpdateList, Btn=btn})
     return UpdateList
 end
 
 local function CreateColorPicker(parent, text, callback)
     local f = Instance.new("Frame", parent)
     f.Size = UDim2.new(1, -10, 0, 44)
-    f.BackgroundColor3 = Color3.fromRGB(18, 20, 34)
+    f.BackgroundColor3 = Color3.fromRGB(18, 20, 32)
     f.BorderSizePixel = 0
+    f.Visible = false
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 10)
     local l = Instance.new("TextLabel", f)
     l.Size = UDim2.new(0.5, 0, 1, 0)
@@ -357,23 +362,26 @@ local function CreateColorPicker(parent, text, callback)
     return f
 end
 
-local mainTab, mainBtn = CreateTab("Main")
-local combatTab, combatBtn = CreateTab("Combat")
-local espTab, espBtn = CreateTab("ESP")
-local utilTab, utilBtn = CreateTab("Utility")
-
-SwitchTab("Main")
+local TabsFrames = {}
+for _, name in ipairs(Tabs) do
+    local f = Instance.new("Frame", Scroll)
+    f.Name = name
+    f.Size = UDim2.new(1, 0, 0, 0)
+    f.BackgroundTransparency = 1
+    f.Visible = (name == "MOVEMENT")
+    TabsFrames[name] = f
+end
 
 local States = {
-    Fly = false, FlySpeed = 50,
+    Fly = false, FlySpeed = 60,
     NoClip = false,
     WalkSpeed = 16,
     Aimbot = false, AimbotFOV = 120, AimbotSmooth = 0.5, SilentAim = false,
-    Spinbot = false, SpinSpeed = 5,
+    Spinbot = false, SpinSpeed = 20,
     ESP = false, ESPBox = false, ESPName = false, ESPSkeleton = false, ESPTracer = false, ESPColor = Color3.fromRGB(0, 200, 255),
     FOV = 70,
-    TargetPlayer = nil,
-    DrawFOV = false
+    DrawFOV = false,
+    TargetPlayer = nil
 }
 
 local Connections = {}
@@ -399,108 +407,11 @@ end
 
 local function UpdateAllDropdowns()
     local names = GetPlayerNames()
-    for _, dd in ipairs(Dropdowns) do dd.Update(names) end
+    for _, dd in ipairs(Dropdowns) do dd(names) end
 end
 
 Players.PlayerAdded:Connect(function() task.wait(0.5) UpdateAllDropdowns() end)
 Players.PlayerRemoving:Connect(function() task.wait(0.5) UpdateAllDropdowns() end)
-
-CreateSection(mainTab, "MOVEMENT")
-CreateToggle(mainTab, "Fly", function(v) States.Fly = v; if v then StartFly() else StopFly() end end)
-CreateSlider(mainTab, "Fly Speed", 10, 300, 50, function(v) States.FlySpeed = v end)
-CreateToggle(mainTab, "NoClip", function(v) States.NoClip = v; if v then StartNoClip() else StopNoClip() end end)
-CreateSlider(mainTab, "Walk Speed", 16, 500, 16, function(v) States.WalkSpeed = v; if LocalPlayer.Character then local h = LocalPlayer.Character:FindFirstChildOfClass("Humanoid"); if h then h.WalkSpeed = v end end end)
-
-CreateSection(mainTab, "SPINBOT")
-CreateToggle(mainTab, "Spinbot", function(v) States.Spinbot = v; if v then StartSpinbot() else StopSpinbot() end end)
-CreateSlider(mainTab, "Spin Speed", 1, 50, 5, function(v) States.SpinSpeed = v end)
-
-CreateSection(mainTab, "FOV")
-CreateSlider(mainTab, "FOV Changer", 30, 120, 70, function(v) States.FOV = v; Camera.FieldOfView = v end)
-
-CreateSection(combatTab, "AIMBOT")
-CreateToggle(combatTab, "Aimbot", function(v) States.Aimbot = v; if v then StartAimbot() else StopAimbot() end end)
-CreateToggle(combatTab, "Silent Aim", function(v) States.SilentAim = v end)
-CreateToggle(combatTab, "Draw FOV", function(v) States.DrawFOV = v; if v then DrawFOVCircle() else if FOVCircle then FOVCircle:Remove(); FOVCircle = nil end end end)
-CreateSlider(combatTab, "Aimbot FOV", 30, 300, 120, function(v) States.AimbotFOV = v; if FOVCircle then FOVCircle.Radius = v end end)
-CreateSlider(combatTab, "Aimbot Smooth", 1, 100, 50, function(v) States.AimbotSmooth = v / 100 end)
-
-CreateSection(combatTab, "TELEPORT")
-local targetDropdown = CreateDropdown(combatTab, "Target Player", function(sel) States.TargetPlayer = sel end)
-targetDropdown(GetPlayerNames())
-CreateButton(combatTab, "Teleport to Target", function()
-    if States.TargetPlayer and States.TargetPlayer ~= "No Players" then
-        local p = GetPlayerByName(States.TargetPlayer)
-        if p and p.Character then
-            local myHRP = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-            local tHRP = p.Character:FindFirstChild("HumanoidRootPart")
-            if myHRP and tHRP then myHRP.CFrame = tHRP.CFrame + Vector3.new(0,3,0) end
-        end
-    end
-end)
-CreateButton(combatTab, "Bring Target", function()
-    if States.TargetPlayer and States.TargetPlayer ~= "No Players" then
-        local p = GetPlayerByName(States.TargetPlayer)
-        if p and p.Character then
-            local myHRP = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-            local tHRP = p.Character:FindFirstChild("HumanoidRootPart")
-            if myHRP and tHRP then tHRP.CFrame = myHRP.CFrame + Vector3.new(0,3,0) end
-        end
-    end
-end)
-CreateButton(combatTab, "Kill Target", function()
-    if States.TargetPlayer and States.TargetPlayer ~= "No Players" then
-        local p = GetPlayerByName(States.TargetPlayer)
-        if p and p.Character then
-            local hum = p.Character:FindFirstChildOfClass("Humanoid")
-            if hum then
-                for _, v in ipairs(ReplicatedStorage:GetDescendants()) do
-                    if v:IsA("RemoteEvent") and (v.Name:lower():find("damage") or v.Name:lower():find("kill")) then
-                        pcall(function() v:FireServer(hum, 99999) end)
-                    end
-                end
-                pcall(function() p.Character:BreakJoints() end)
-            end
-        end
-    end
-end)
-
-CreateSection(espTab, "ESP")
-CreateToggle(espTab, "ESP", function(v) States.ESP = v; if v then StartESP() else StopESP() end end)
-CreateToggle(espTab, "Box ESP", function(v) States.ESPBox = v end)
-CreateToggle(espTab, "Name ESP", function(v) States.ESPName = v end)
-CreateToggle(espTab, "Skeleton ESP", function(v) States.ESPSkeleton = v end)
-CreateToggle(espTab, "Tracer ESP", function(v) States.ESPTracer = v end)
-CreateColorPicker(espTab, "ESP Color", function(c) States.ESPColor = c end)
-
-CreateSection(utilTab, "UTILITY")
-CreateToggle(utilTab, "Anti AFK", function(v)
-    if v then
-        Connections.AFK = VirtualUser.Button2Down:Connect(function()
-            VirtualUser.Button2Up(Vector2.new(0,0), Camera.CFrame)
-        end)
-    else
-        if Connections.AFK then Connections.AFK:Disconnect(); Connections.AFK = nil end
-    end
-end)
-CreateButton(utilTab, "Kill All", function()
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p ~= LocalPlayer and p.Character then
-            local hum = p.Character:FindFirstChildOfClass("Humanoid")
-            if hum then
-                for _, v in ipairs(ReplicatedStorage:GetDescendants()) do
-                    if v:IsA("RemoteEvent") and (v.Name:lower():find("damage") or v.Name:lower():find("kill")) then
-                        pcall(function() v:FireServer(hum, 99999) end)
-                    end
-                end
-                pcall(function() p.Character:BreakJoints() end)
-            end
-        end
-    end
-end)
-CreateButton(utilTab, "Reset All", function()
-    ResetAll()
-end)
 
 function StartFly()
     if Connections.Fly then Connections.Fly:Disconnect() end
@@ -565,48 +476,14 @@ function StopNoClip()
     end
 end
 
-function StartSpinbot()
-    if Connections.Spinbot then Connections.Spinbot:Disconnect() end
-    Connections.Spinbot = RunService.RenderStepped:Connect(function()
-        if not States.Spinbot then return end
-        SpinAngle = (SpinAngle + States.SpinSpeed * 0.5) % 360
-        local char = LocalPlayer.Character
-        if char then
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                hrp.CFrame = CFrame.new(hrp.Position) * CFrame.Angles(0, math.rad(SpinAngle), 0)
-            end
-        end
-    end)
-end
-
-function StopSpinbot()
-    if Connections.Spinbot then Connections.Spinbot:Disconnect(); Connections.Spinbot = nil end
-end
-
-function DrawFOVCircle()
-    if FOVCircle then FOVCircle:Remove() end
-    FOVCircle = Drawing.new("Circle")
-    FOVCircle.Visible = true
-    FOVCircle.Radius = States.AimbotFOV
-    FOVCircle.Thickness = 2
-    FOVCircle.Color = Color3.fromRGB(0, 255, 100)
-    FOVCircle.Transparency = 0.5
-    FOVCircle.Filled = false
-    FOVCircle.NumSides = 32
-    FOVCircle.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-    RunService.RenderStepped:Connect(function()
-        if not States.DrawFOV or not FOVCircle then return end
-        FOVCircle.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-    end)
-end
-
 function StartAimbot()
     if Connections.Aimbot then Connections.Aimbot:Disconnect() end
     Connections.Aimbot = RunService.RenderStepped:Connect(function()
         if not States.Aimbot then return end
         local closest, dist = nil, States.AimbotFOV
         local center = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+        local myPos = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if not myPos then return end
         for _, p in ipairs(Players:GetPlayers()) do
             if p == LocalPlayer or not p.Character then continue end
             local head = p.Character:FindFirstChild("Head")
@@ -615,8 +492,8 @@ function StartAimbot()
             if on then
                 local d = (Vector2.new(pos.X, pos.Y) - center).Magnitude
                 if d < dist then
-                    local ray = Ray.new(Camera.CFrame.Position, (head.Position - Camera.CFrame.Position).Unit * 500)
-                    local hit, hitPos = Workspace:FindPartOnRay(ray, LocalPlayer.Character)
+                    local ray = Ray.new(myPos.Position, (head.Position - myPos.Position).Unit * 200)
+                    local hit = Workspace:FindPartOnRay(ray, LocalPlayer.Character)
                     if not hit or hit:IsDescendantOf(p.Character) then
                         dist = d
                         closest = p
@@ -642,6 +519,25 @@ function StopAimbot()
     if Connections.Aimbot then Connections.Aimbot:Disconnect(); Connections.Aimbot = nil end
 end
 
+function StartSpinbot()
+    if Connections.Spinbot then Connections.Spinbot:Disconnect() end
+    Connections.Spinbot = RunService.RenderStepped:Connect(function()
+        if not States.Spinbot then return end
+        SpinAngle = (SpinAngle + States.SpinSpeed * 2.5) % 360
+        local char = LocalPlayer.Character
+        if char then
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                hrp.CFrame = CFrame.new(hrp.Position) * CFrame.Angles(0, math.rad(SpinAngle), 0)
+            end
+        end
+    end)
+end
+
+function StopSpinbot()
+    if Connections.Spinbot then Connections.Spinbot:Disconnect(); Connections.Spinbot = nil end
+end
+
 function StartESP()
     if Connections.ESP then Connections.ESP:Disconnect() end
     Connections.ESP = RunService.Heartbeat:Connect(function()
@@ -659,12 +555,12 @@ function StartESP()
         if not myHRP then return end
         for _, p in ipairs(Players:GetPlayers()) do
             if p == LocalPlayer then continue end
-            if not p.Character then 
-                if ESPObjects[p] then 
+            if not p.Character then
+                if ESPObjects[p] then
                     for _, v in pairs(ESPObjects[p]) do if v and v.Remove then v:Remove() end end
                     ESPObjects[p] = nil
                 end
-                continue 
+                continue
             end
             local char = p.Character
             local hrp = char:FindFirstChild("HumanoidRootPart")
@@ -777,7 +673,198 @@ function StopESP()
     ESPObjects = {}
 end
 
-function ResetAll()
+function DrawFOVCircle()
+    if FOVCircle then FOVCircle:Remove() end
+    if not States.DrawFOV then return end
+    FOVCircle = Drawing.new("Circle")
+    FOVCircle.Thickness = 1.5
+    FOVCircle.Color = Color3.fromRGB(255, 255, 255)
+    FOVCircle.Filled = false
+    FOVCircle.NumSides = 64
+    FOVCircle.Radius = States.AimbotFOV * 3.5
+    FOVCircle.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+    FOVCircle.Visible = true
+    RunService.RenderStepped:Connect(function()
+        if not States.DrawFOV then
+            if FOVCircle then FOVCircle.Visible = false end
+            return
+        end
+        if FOVCircle then
+            FOVCircle.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+            FOVCircle.Radius = States.AimbotFOV * 3.5
+            FOVCircle.Visible = true
+        end
+    end)
+end
+
+local Dropdowns = {}
+
+local MovTab = TabsFrames["MOVEMENT"]
+CreateSection(MovTab, "FLIGHT")
+CreateToggle(MovTab, "Fly", function(v) States.Fly = v; if v then StartFly() else StopFly() end end)
+CreateSlider(MovTab, "Fly Speed", 10, 400, 60, function(v) States.FlySpeed = v end)
+CreateSection(MovTab, "NOCLIP")
+CreateToggle(MovTab, "NoClip", function(v) States.NoClip = v; if v then StartNoClip() else StopNoClip() end end)
+CreateSection(MovTab, "WALK")
+CreateSlider(MovTab, "Walk Speed", 16, 500, 16, function(v) States.WalkSpeed = v; if LocalPlayer.Character then local h = LocalPlayer.Character:FindFirstChildOfClass("Humanoid"); if h then h.WalkSpeed = v end end end)
+
+local AimTab = TabsFrames["AIMBOT"]
+CreateSection(AimTab, "AIMBOT")
+CreateToggle(AimTab, "Aimbot", function(v) States.Aimbot = v; if v then StartAimbot() else StopAimbot() end end)
+CreateToggle(AimTab, "Silent Aim", function(v) States.SilentAim = v end)
+CreateSlider(AimTab, "Aimbot FOV", 30, 300, 120, function(v) States.AimbotFOV = v end)
+CreateSlider(AimTab, "Aimbot Smooth", 1, 100, 50, function(v) States.AimbotSmooth = v / 100 end)
+CreateToggle(AimTab, "Draw FOV", function(v) States.DrawFOV = v; if v then DrawFOVCircle() else if FOVCircle then FOVCircle:Remove(); FOVCircle = nil end end end)
+CreateSection(AimTab, "SPINBOT")
+CreateToggle(AimTab, "Spinbot", function(v) States.Spinbot = v; if v then StartSpinbot() else StopSpinbot() end end)
+CreateSlider(AimTab, "Spin Speed", 1, 50, 20, function(v) States.SpinSpeed = v end)
+
+local EspTab = TabsFrames["ESP"]
+CreateSection(EspTab, "ESP")
+CreateToggle(EspTab, "ESP", function(v) States.ESP = v; if v then StartESP() else StopESP() end end)
+CreateToggle(EspTab, "Box ESP", function(v) States.ESPBox = v end)
+CreateToggle(EspTab, "Name ESP", function(v) States.ESPName = v end)
+CreateToggle(EspTab, "Skeleton ESP", function(v) States.ESPSkeleton = v end)
+CreateToggle(EspTab, "Tracer ESP", function(v) States.ESPTracer = v end)
+CreateColorPicker(EspTab, "ESP Color", function(c) States.ESPColor = c end)
+
+local UtilTab = TabsFrames["UTILITY"]
+CreateSection(UtilTab, "TELEPORT")
+local targetDropdown = CreateDropdown(UtilTab, "Target Player", function(sel) States.TargetPlayer = sel end)
+table.insert(Dropdowns, targetDropdown)
+targetDropdown(GetPlayerNames())
+CreateButton(UtilTab, "Teleport to Target", function()
+    if States.TargetPlayer and States.TargetPlayer ~= "No Players" then
+        local p = GetPlayerByName(States.TargetPlayer)
+        if p and p.Character then
+            local myHRP = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            local tHRP = p.Character:FindFirstChild("HumanoidRootPart")
+            if myHRP and tHRP then myHRP.CFrame = tHRP.CFrame + Vector3.new(0,3,0) end
+        end
+    end
+end)
+CreateButton(UtilTab, "Bring Target", function()
+    if States.TargetPlayer and States.TargetPlayer ~= "No Players" then
+        local p = GetPlayerByName(States.TargetPlayer)
+        if p and p.Character then
+            local myHRP = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            local tHRP = p.Character:FindFirstChild("HumanoidRootPart")
+            if myHRP and tHRP then tHRP.CFrame = myHRP.CFrame + Vector3.new(0,3,0) end
+        end
+    end
+end)
+CreateSection(UtilTab, "FOV")
+CreateSlider(UtilTab, "FOV Changer", 30, 120, 70, function(v) States.FOV = v; Camera.FieldOfView = v end)
+CreateSection(UtilTab, "UTILITY")
+CreateToggle(UtilTab, "Anti AFK", function(v)
+    if v then
+        Connections.AFK = VirtualUser.Button2Down:Connect(function()
+            VirtualUser.Button2Up(Vector2.new(0,0), Camera.CFrame)
+        end)
+    else
+        if Connections.AFK then Connections.AFK:Disconnect(); Connections.AFK = nil end
+    end
+end)
+CreateButton(UtilTab, "Kill Target", function()
+    if States.TargetPlayer and States.TargetPlayer ~= "No Players" then
+        local p = GetPlayerByName(States.TargetPlayer)
+        if p and p.Character then
+            local hum = p.Character:FindFirstChildOfClass("Humanoid")
+            if hum then
+                for _, v in ipairs(ReplicatedStorage:GetDescendants()) do
+                    if v:IsA("RemoteEvent") and (v.Name:lower():find("damage") or v.Name:lower():find("kill")) then
+                        pcall(function() v:FireServer(hum, 99999) end)
+                    end
+                end
+                pcall(function() p.Character:BreakJoints() end)
+            end
+        end
+    end
+end)
+
+local GuideTab = TabsFrames["GUIDE"]
+local guideText = [[
+═══════════════════════════════════
+        VISITING v6 PRO GUIDE
+═══════════════════════════════════
+
+[CONTROLS]
+INSERT  → Toggle Menu
+END     → Emergency Stop (All Off)
+
+[MOVEMENT]
+Fly       → W/A/S/D move, Space up, Shift down
+NoClip    → Walk through walls
+Walk Speed→ Adjust running speed
+
+[AIMBOT]
+Aimbot    → Auto-aim to nearest target
+Silent Aim→ Aim without camera shake
+FOV       → Aim field of view
+Smooth    → Aim smoothness
+Draw FOV  → Show aim circle on screen
+
+[SPINBOT]
+Spinbot   → Character spins around
+Spin Speed→ Rotation speed
+
+[ESP]
+Box       → Draw bounding boxes
+Name      → Show player names
+Skeleton  → Show bone structure
+Tracer    → Draw line to target
+Color     → Change ESP color
+
+[FOV]
+FOV Changer→ Adjust camera field of view
+
+[TELEPORT]
+Select target → Choose player
+Teleport to Target → Go to player
+Bring Target → Pull player to you
+
+[UTILITY]
+Anti AFK  → Prevent auto-kick
+Kill Target → Attempt to kill selected player
+
+═══════════════════════════════════
+        MADE FOR TESTING
+        EDUCATIONAL USE ONLY
+═══════════════════════════════════
+]]
+local guide = Instance.new("TextLabel", GuideTab)
+guide.Name = "Guide"
+guide.Size = UDim2.new(1, -10, 0, 450)
+guide.BackgroundColor3 = Color3.fromRGB(18, 20, 32)
+guide.Text = guideText
+guide.TextColor3 = Color3.fromRGB(200, 200, 210)
+guide.Font = Enum.Font.Gotham
+guide.TextSize = 13
+guide.TextXAlignment = Enum.TextXAlignment.Left
+guide.TextYAlignment = Enum.TextYAlignment.Top
+guide.TextWrapped = true
+guide.Visible = true
+Instance.new("UICorner", guide).CornerRadius = UDim.new(0, 10)
+
+for _, tab in ipairs(Tabs) do
+    local f = TabsFrames[tab]
+    local count = 0
+    for _, child in ipairs(f:GetChildren()) do
+        if child:IsA("Frame") or child:IsA("TextButton") then
+            count = count + 1
+            child.Position = UDim2.new(0, 0, 0, (count - 1) * 52)
+            child.Visible = (tab == "MOVEMENT")
+        end
+        if child:IsA("TextLabel") and child.Name == "Guide" then
+            child.Visible = (tab == "GUIDE")
+        end
+    end
+    f.Size = UDim2.new(1, 0, 0, count * 52 + 100)
+end
+
+SwitchTab("MOVEMENT")
+
+local function ResetAll()
     States.Fly = false; States.NoClip = false; States.Aimbot = false; States.Spinbot = false; States.ESP = false; States.DrawFOV = false
     StopFly(); StopNoClip(); StopAimbot(); StopSpinbot(); StopESP()
     if FOVCircle then FOVCircle:Remove(); FOVCircle = nil end
@@ -796,14 +883,14 @@ end)
 local splash = Instance.new("TextLabel", ScreenGui)
 splash.Size = UDim2.new(0, 420, 0, 48)
 splash.Position = UDim2.new(0.5, -210, 0, 20)
-splash.BackgroundColor3 = Color3.fromRGB(6, 8, 18)
-splash.Text = "VISITING v6 | INSERT | END = Kapat"
+splash.BackgroundColor3 = Color3.fromRGB(8, 10, 20)
+splash.Text = "VISITING v6 PRO | INSERT | END = Emergency Stop"
 splash.TextColor3 = Color3.fromRGB(0, 200, 255)
 splash.Font = Enum.Font.GothamBold
 splash.TextSize = 18
 Instance.new("UICorner", splash).CornerRadius = UDim.new(0, 12)
 CreateShadow(splash, UDim2.new(1, 40, 1, 40), UDim2.new(0.5, 0, 0.5, 0), 0.5)
-task.delay(4, function() splash:Destroy() end)
+task.delay(5, function() splash:Destroy() end)
 
 UpdateAllDropdowns()
-print("VISITING v6 yüklendi - Tam donanımlı!")
+print("VISITING v6 PRO yüklendi - Tüm özellikler aktif.")
