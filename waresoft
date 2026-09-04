@@ -4,16 +4,18 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 local VirtualUser = game:GetService("VirtualUser")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TweenService = game:GetService("TweenService")
-local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
 local Mouse = LocalPlayer:GetMouse()
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "VS_V5"
+ScreenGui.Name = "VS_GUI"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = game.CoreGui
+ScreenGui.Parent = LocalPlayer.PlayerGui or game.CoreGui
+
+if not ScreenGui.Parent then
+    ScreenGui.Parent = game.CoreGui
+end
 
 local function CreateShadow(parent, size, pos, trans)
     local s = Instance.new("ImageLabel")
